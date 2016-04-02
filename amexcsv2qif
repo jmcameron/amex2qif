@@ -23,14 +23,15 @@ parser = argparse.ArgumentParser(
                 All vendors matching one of the dining items will be set to the category 'Dining'.
            ''')
 parser.add_argument('csvfilename', type=str)
+parser.add_argument('--oldstyle', action="store_true", default=False,
+                    help="Use the old style format with card-holder name in column 4e")
 
 args = parser.parse_args()
 
-edir = os.path.dirname(os.path.abspath(__file__))
+edir = os.path.dirname(os.path.realpath(__file__))
 if os.path.exists(os.path.join(edir, 'categories.py')):
    sys.path.append(edir)
    from categories import dining, catmap
-
 
 with open(args.csvfilename, 'r') as csvfile:
    csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -42,7 +43,9 @@ with open(args.csvfilename, 'r') as csvfile:
          print >> sys.stderr, "Error in line %d: only %d field(s)!" % (i, len(row))
          continue
 
-      if 0:
+      if args.oldstyle:
+         # 01/29/2016  Fri,,"RESTAURANT","Card Holder Name","XXXX-XXXXXX-NNNNN",,,3.27,,,,,,,,
+         # COLS:  0:Date, 1:Ref?, 2:Payee, 3:Card-holder-name, 4:Card-number, 7:Amount
          date = row[0].split()[0]
          ref = None
          payee = row[2]
@@ -50,13 +53,18 @@ with open(args.csvfilename, 'r') as csvfile:
          amount = -float(row[7])
          memo = None
       else:
-         date = row[0]
-         ref = row[1].split()[1]
-         amount = float(row[2])
-         payee = row[3]
-         memo = row[4]
-         customer = None
-         # customer = row[3].split()[0]
+         try:
+             date = row[0]
+             ref = row[1].split()[1]
+             amount = float(row[2])
+             payee = row[3]
+             memo = row[4]
+             customer = None
+             # customer = row[3].split()[0]
+         except:
+            print "This file does not appear to be in the standard "
+            print "Amex CSV file format.  Try adding the --oldstyle flag"
+            sys.exit()
 
       category = ''
 
@@ -69,7 +77,10 @@ with open(args.csvfilename, 'r') as csvfile:
             category = cat
 
       if customer:
-         category += "/%s" % customer
+         if memo:
+            memo += " (%s)" % customer
+         else:
+            memo = customer
 
       if memo and ref:
          memo += " Ref: %s" % ref
