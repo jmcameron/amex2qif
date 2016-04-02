@@ -16,9 +16,11 @@ parser = argparse.ArgumentParser(
               as the amex2qif program, it will automatically be used. 
               The file should have two entries: 
 
-                dining = (list of string names of restaurant names to use the category 'Dining')
+                dining = (list of string names of restaurant names)
 
                 catmap = {dictionary, key=string name of vendor, value=category (string)
+
+                All vendors matching one of the dining items will be set to the category 'Dining'.
            ''')
 parser.add_argument('csvfilename', type=str)
 
