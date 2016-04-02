@@ -1,77 +1,36 @@
 #!/usr/bin/env python
 
+import os
 import sys
 import csv
+import argparse
 
-dining = (
-   "AMY'S PATIO CAFE",
-   "ANNIA'S KITCHEN",
-   'CAFE',
-   "COCO'S",
-   "DENNY'S",
-   "MARIA'S ITALIAN",
-   "MCDONALD'S",
-   "RUBIO'S",
-   "SHARKY's WOODFIRED",
-   'BLACK ANGUS',
-   'BURGER',
-   'BY BRAZIL',
-   'CARROWS',
-   'CHICK-FIL-A',
-   'CHIPOTLE',
-   'Central Park',
-   'EL PORTAL',
-   'FRESCOS FAMILY',
-   'FU SHING',
-   'GAUCHOS VILLAGE',
-   'GREEN STREET',
-   'HOMETOWN BUFFET',
-   'ISLAMORADA FISH',
-   'KATHLEEN S',
-   'MARGARITAS MEXICAN',
-   'MIJARES',
-   'MONROVIAN FAMILY',
-   'NEW DELHI PALACE',
-   'OAK TREE INN',
-   'PANERA BREAD',
-   'PASADENA SANDWICH',
-   'PF CHANGS',
-   'PHILS FISH MKT',
-   'PIZZA REV',
-   'PRESIDENT THAI',
-   'RED LOBSTER',
-   'RED ROBIN',
-   'ROBINS WOOD FIRE',
-   'SAHARA RESTAURANT',
-   'SIZZLER',
-   'SOUPLANTATION',
-   'STEER N ALE',
-   'STONEFIRE GRILL',
-   'SUBWAY',
-   'SUSHI',
-   'TIPPAROS',
-   'ZELO PIZZERIA',
-)
+dining = ()
 
-catmap = {
-   'CULINART' : 'Dining:JPL',
-   '1&1 INTERNET' : 'Computer:Domain Name Service',
-   'GARFIELD BEACH CVS' : 'Medical:Medicine',
-   'GABRIELS MENS WEAR' : 'Clothing:Jonathan',
-   'COSTCO GAS' : 'Auto:Fuel',
-   'CHEVRON' : 'Auto:Fuel',
-   'EXXONMOBIL' : 'Auto:Fuel',
-   'UNION 76' : 'Auto:Fuel',
-   'HONDA OF PASADENA' : 'Auto:Service',
-   'Norm Reeves Honda' : 'Auto:Service',
-   'ALBERTSONS' : 'Groceries',
-   'RALPHS' : 'Groceries',
-   'SPROUTS FARMERS' : 'Groceries',
-   'VONS STORE' : 'Groceries',
-   }   
+catmap = {}   
+
+parser = argparse.ArgumentParser(
+    prog='amex2qif',
+    description='''Convert American Express CSV export files to QIF format''',
+    epilog='''If you provide a 'categories.py' file in the same directory
+              as the amex2qif program, it will automatically be used. 
+              The file should have two entries: 
+
+                dining = (list of string names of restaurant names to use the category 'Dining')
+
+                catmap = {dictionary, key=string name of vendor, value=category (string)
+           ''')
+parser.add_argument('csvfilename', type=str)
+
+args = parser.parse_args()
+
+edir = os.path.dirname(os.path.abspath(__file__))
+if os.path.exists(os.path.join(edir, 'categories.py')):
+   sys.path.append(edir)
+   from categories import dining, catmap
 
 
-with open(sys.argv[1], 'r') as csvfile:
+with open(args.csvfilename, 'r') as csvfile:
    csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
    for i, row in enumerate(csvreader):
       if len(row) == 0:
@@ -120,4 +79,3 @@ with open(sys.argv[1], 'r') as csvfile:
       if memo:
          print "M%s" % memo
       print "^"
-
