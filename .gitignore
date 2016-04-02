@@ -5,3 +5,4 @@ __pycache__/
 
 # Individual category files, not for repo
 categories.py
+test.csv
