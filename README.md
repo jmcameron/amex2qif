@@ -22,7 +22,7 @@ This will create the file 'statement.qif' from the CSV
 Automatic Categorization
 ------------------------
 
-If you provide a 'categories.txt' file in the same directory as the amex2qif
+If you provide a 'categories.txt' file in the same directory as the **amex2qif**
 program, it will used to automatically assign categories to transactions if
 the payee matches know vendors.  
 
@@ -30,7 +30,7 @@ the payee matches know vendors.
 
 Each line should have the vendor name, a comma, and then the category
 to be used when the payee matches that vendor.  Empty lines are ignored.  A
-default version of this file can be kept in the directory of the amex2qif
+default version of this file can be kept in the directory of the **amex2qif**
 executable.  If a copy of this file is found in the directory that this ommand
 is run in, it overrides the version in the executable directory.
 
