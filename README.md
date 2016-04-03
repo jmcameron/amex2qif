@@ -11,7 +11,7 @@ conver the CSV statement into a QIF file on your local computer.
 Usage
 -----
 
-USAGE: 
+Here is how to run this program:
 
     amex2qif statement.csv > statement.qif
 
