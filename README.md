@@ -39,5 +39,10 @@ Running on Windows
 
 TBD... First you must install Python on your windows system.
 
+Disclaimer
+----------
+
+This work is not connected to American Express or sponsored by it in any way!
+
 -Jonathan Cameron
  jmcameron@gmail.com
