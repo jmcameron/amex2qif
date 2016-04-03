@@ -5,33 +5,77 @@ import sys
 import csv
 import argparse
 
-dining = ()
+def readCategories(filename):
+   """Read the category data from a file"""
+   cats = {}
+   with open(filename, 'r') as csvfile:
+      csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+      for i, row in enumerate(csvreader):
+         if len(row) == 0:
+            # Ignore blank lines
+            continue
+         if len(row) < 2:
+            print >> sys.stderr, "Syntax error in line %d: Need 2 fields separated by a comma: vendor, category!" % i
+            print >> sys.stderr, row
+            continue
+         vendor = row[0].strip()
+         category = row[1].strip()
+         if vendor and category:
+            cats[vendor] = category
+         else:
+            if not vendor:
+               print >> sys.stderr, "Error in line %d: vendor field is empty (before the comma)!" % i
+            else:
+               print >> sys.stderr, "Error in line %d: category field for vendor='%s' is empty (after the comma)!" % (i, vendor)
+            continue
+   return cats
 
-catmap = {}   
 
 parser = argparse.ArgumentParser(
     prog='amex2qif',
     description='''Convert American Express CSV export files to QIF format''',
-    epilog='''If you provide a 'categories.py' file in the same directory
+    epilog='''If you provide a 'categories.txt' file in the same directory
               as the amex2qif program, it will automatically be used. 
-              The file should have two entries: 
-
-                dining = (list of string names of restaurant names)
-
-                catmap = {dictionary, key=string name of vendor, value=category (string)
-
-                All vendors matching one of the dining items will be set to the category 'Dining'.
+              Each line should have the vendor name, a comman, and then 
+              the category to be used when the payee matches that vendor.
+              Empty lines are ignored.   A default version of this file 
+              can be kept in the directory of the amex2qif executable.  If 
+              a copy of this file is found in the directory that this 
+              ommand is run in, it overrides the version in the executable 
+              directory.
            ''')
 parser.add_argument('csvfilename', type=str)
 parser.add_argument('--oldstyle', action="store_true", default=False,
                     help="Use the old style format with card-holder name in column 4e")
+parser.add_argument('--printcats', action="store_true", default=False,
+                    help="Print the categories read from the 'categories.txt' file and exit.")
 
 args = parser.parse_args()
 
 edir = os.path.dirname(os.path.realpath(__file__))
-if os.path.exists(os.path.join(edir, 'categories.py')):
-   sys.path.append(edir)
-   from categories import dining, catmap
+
+catmap = {}
+
+# Read the category map
+if os.path.exists('categories.txt'):
+   # Local version overrides one in executable directory
+   catmap = readCategories('categories.txt')
+elif os.path.exists(os.path.join(edir, 'categories.txt')):
+   catmap = readCategories(os.path.join(edir, 'categories.txt'))
+else:
+   catmap = {}
+
+if args.printcats:
+   print
+   print "CATEGORIES:"
+   vendlen = max([len(v) for v in catmap])
+   fmt = "  %%%ds: %%s" % vendlen
+   for vend in sorted(catmap.keys()):
+      cat = catmap[vend]
+      print fmt % (vend, cat)
+   print
+   sys.exit()
+
 
 with open(args.csvfilename, 'r') as csvfile:
    csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
@@ -68,12 +112,8 @@ with open(args.csvfilename, 'r') as csvfile:
 
       category = ''
 
-      for d in dining:
-         if d in payee:
-            category = 'Dining'
-
       for p,cat in catmap.items():
-         if p in payee:
+         if p.upper() in payee.upper():
             category = cat
 
       if customer:
