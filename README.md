@@ -26,8 +26,7 @@ If you provide a 'categories.txt' file in the same directory as the amex2qif
 program, it will used to automatically assign categories to transactions if
 the payee matches know vendors.  
 
-Format
-~~~~~~
+**Format**
 
 Each line should have the vendor name, a comman, and then the category
 to be used when the payee matches that vendor.  Empty lines are ignored.  A
