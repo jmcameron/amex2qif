@@ -28,7 +28,7 @@ the payee matches know vendors.
 
 **Format of 'categories.txt'**
 
-Each line should have the vendor name, a comman, and then the category
+Each line should have the vendor name, a comma, and then the category
 to be used when the payee matches that vendor.  Empty lines are ignored.  A
 default version of this file can be kept in the directory of the amex2qif
 executable.  If a copy of this file is found in the directory that this ommand
