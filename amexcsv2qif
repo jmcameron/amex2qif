@@ -103,7 +103,7 @@ with open(args.csvfilename, 'r') as csvfile:
 
       if args.oldstyle:
          # 01/29/2016  Fri,,"RESTAURANT","Card Holder Name","XXXX-XXXXXX-NNNNN",,,3.27,,,,,,,,
-         # COLS:  0:Date, 1:Ref?, 2:Payee, 3:Card-holder-name, 4:Card-number, 7:Amount
+         # COLS:  0:Date, 1:Ref?, 2:Payee, 3:Card-holder-name, 4:Card-number, 5:memo, 7:Amount
          date = row[0].split()[0]
          ref = None
          payee = row[2]
