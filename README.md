@@ -52,9 +52,9 @@ Automatic Categorization
 ------------------------
 
 If you provide a 'categories.txt' file in the same directory in which you
-execute the **amex2qif** program or in direcotry containing the **amex2qif**
-program, it will used to automatically assign categories to transactions if
-the payee matches know vendors.
+execute the **amex2qif** program or in the directory containing the
+**amex2qif** program, it will used to automatically assign categories to
+transactions if the payee matches know vendors.
 
 **Format of 'categories.txt'**
 
