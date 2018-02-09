@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
+
 import os
 import sys
 import csv
@@ -15,8 +17,9 @@ def readCategories(filename):
             # Ignore blank lines
             continue
          if len(row) < 2:
-            print >> sys.stderr, "Syntax error in line %d: Need 2 fields separated by a comma: vendor, category!" % i
-            print >> sys.stderr, row
+            print("Syntax error in line %d: Need 2 fields separated "
+                  "by a comma: vendor, category!" % i, file=sys.stderr)
+            print(row, file=sys.stderr)
             continue
          vendor = row[0].strip()
          category = row[1].strip()
@@ -24,9 +27,11 @@ def readCategories(filename):
             cats[vendor] = category
          else:
             if not vendor:
-               print >> sys.stderr, "Error in line %d: vendor field is empty (before the comma)!" % i
+               print("Error in line %d: vendor field is "
+                     "empty (before the comma)!" % i, file=sys.stderr)
             else:
-               print >> sys.stderr, "Error in line %d: category field for vendor='%s' is empty (after the comma)!" % (i, vendor)
+               print("Error in line %d: category field for "
+                     "vendor='%s' is empty (after the comma)!" % (i, vendor), file=sys.stderr)
             continue
    return cats
 
@@ -49,6 +54,11 @@ parser.add_argument('--oldstyle', action="store_true", default=False,
                     help="Use the old style format with card-holder name in column 4e")
 parser.add_argument('--printcats', action="store_true", default=False,
                     help="Print the categories read from the 'categories.txt' file and exit.")
+parser.add_argument('--header', action="store_true", default=False,
+                    help="The first line of the CSV file contains column headers")
+parser.add_argument('--complain', action="store_true", default=False,
+                    help="Complain about unknown Payees (to stderr)")
+
 
 args = parser.parse_args()
 
@@ -66,15 +76,17 @@ else:
    catmap = {}
 
 if args.printcats:
-   print
-   print "CATEGORIES:"
+   print()
+   print("CATEGORIES:")
    vendlen = max([len(v) for v in catmap])
    fmt = "  %%%ds: %%s" % vendlen
    for vend in sorted(catmap.keys()):
       cat = catmap[vend]
-      print fmt % (vend, cat)
+      print(fmt % (vend, cat))
    print
    sys.exit()
+
+unknown_payees = set()
 
 
 with open(args.csvfilename, 'r') as csvfile:
@@ -83,8 +95,10 @@ with open(args.csvfilename, 'r') as csvfile:
       if len(row) == 0:
          # Ignore blank lines
          continue
+      if i == 0 and args.header:
+         continue
       if len(row) < 5:
-         print >> sys.stderr, "Error in line %d: only %d field(s)!" % (i, len(row))
+         print("Error in line %d: only %d field(s)!" % (i, len(row)), file=sys.stderr)
          continue
 
       if args.oldstyle:
@@ -94,8 +108,11 @@ with open(args.csvfilename, 'r') as csvfile:
          ref = None
          payee = row[2]
          customer = row[3].split()[0]
-         amount = -float(row[7])
-         memo = None
+         try:
+             amount = -float(row[7])
+         except:
+             raise RuntimeError("Error in amount in column 7 on line %d of CSV file" % i+1)
+         memo = row[5]
       else:
          try:
              date = row[0]
@@ -106,29 +123,37 @@ with open(args.csvfilename, 'r') as csvfile:
              customer = None
              # customer = row[3].split()[0]
          except:
-            print "This file does not appear to be in the standard "
-            print "Amex CSV file format.  Try adding the --oldstyle flag"
+            print("This file does not appear to be in the standard ")
+            print("Amex CSV file format.  Try adding the --oldstyle flag")
+            print("Columns: date, reference, amount, payee, memo")
             sys.exit()
 
       category = ''
 
-      for p,cat in catmap.items():
-         if p.upper() in payee.upper():
+      for p, cat in catmap.items():
+         if payee.upper().startswith(p.upper()):
             category = cat
 
+      if category == '':
+         unknown_payees.add(payee.upper())
+
       if customer:
-         if memo:
+         if memo and customer not in memo:
             memo += " (%s)" % customer
-         else:
-            memo = customer
 
       if memo and ref:
          memo += " Ref: %s" % ref
 
-      print "D%s" % date
-      print "T%.2f" % amount
-      print "P%s" % payee
-      print "L%s" % category
+      print("D%s" % date)
+      print("T%.2f" % amount)
+      print("P%s" % payee)
+      print("L%s" % category)
       if memo:
-         print "M%s" % memo
-      print "^"
+         print("M%s" % memo)
+      print("^")
+
+
+if args.complain:
+    print("\nUnrecognized Payees:", file=sys.stderr)
+    for payee in sorted([s for s in unknown_payees]):
+        print("   %s" % payee, file=sys.stderr)
