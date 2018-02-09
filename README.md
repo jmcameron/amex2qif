@@ -51,9 +51,10 @@ In the new-style, the columns are:
 Automatic Categorization
 ------------------------
 
-If you provide a 'categories.txt' file in the same directory as the **amex2qif**
+If you provide a 'categories.txt' file in the same directory in which you
+execute the **amex2qif** program or in direcotry containing the **amex2qif**
 program, it will used to automatically assign categories to transactions if
-the payee matches know vendors.  
+the payee matches know vendors.
 
 **Format of 'categories.txt'**
 
