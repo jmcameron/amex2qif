@@ -17,7 +17,7 @@ Here is how to run this program:
 
 where 'statement.csv' is a CSV statement downloaded from American Express.
 
-This will create the file 'statement.qif' from the CSV 
+This will create the file 'statement.qif' from the CSV file 'statement.csv'.
 
 The program supports several options. Do:
 
