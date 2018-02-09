@@ -13,7 +13,7 @@ Usage
 
 Here is how to run this program:
 
-   amex2qif statement.csv > statement.qif
+    amex2qif statement.csv > statement.qif
 
 where 'statement.csv' is a CSV statement downloaded from American Express.
 
@@ -21,7 +21,7 @@ This will create the file 'statement.qif' from the CSV
 
 The program supports several options. Do:
 
-   amex2qif --help
+    amex2qif --help
    
 to see the supported options
 
@@ -35,7 +35,7 @@ again.
 
 In the old-style, the columns are:
 
-  1:Date, 2:Ref?, 3:Payee, 4:Card-holder-name, 5:Card-number, 8:Amount
+    1:Date, 2:Ref?, 3:Payee, 4:Card-holder-name, 5:Card-number, 8:Amount
 
 It is unclear what AMEX expects to be in columns 6 and 7.
 
@@ -45,7 +45,7 @@ it will be added to the memo field in the QIF output for that item.
 
 In the new-style, the columns are:
 
-  1:Data, 2:Reference, 3:Amount, 4:Payee, 5:Memo
+    1:Data, 2:Reference, 3:Amount, 4:Payee, 5:Memo
 
 
 Automatic Categorization
