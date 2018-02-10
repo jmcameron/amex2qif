@@ -111,7 +111,13 @@ with open(args.csvfilename, 'r') as csvfile:
          try:
              amount = -float(row[7])
          except:
-             raise RuntimeError("Error in amount in column 7 on line %d of CSV file" % i+1)
+             if isinstance(row[7], str) and i==0:
+                 raise RuntimeError("The AMOUNT column (%s) in the first row of "
+                                    "the CSV file is not a number.  The first row "
+                                    "may contain column headers. Try running again "
+                                    "with the --header option" % row[7])
+             else:
+                 raise RuntimeError("Error in amount (%s) in column 7 on line %d of CSV file" % (row[7], i+1))
          memo = row[5]
       else:
          try:
