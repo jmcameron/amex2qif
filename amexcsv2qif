@@ -22,6 +22,8 @@ def readCategories(filename):
             print(row, file=sys.stderr)
             continue
          vendor = row[0].strip()
+         if vendor.startswith("GglPay "):
+            vendor = vendor.replace("GglPay ",'')
          category = row[1].strip()
          if vendor and category:
             cats[vendor] = category
@@ -50,6 +52,8 @@ parser = argparse.ArgumentParser(
               directory.
            ''')
 parser.add_argument('csvfilename', type=str)
+parser.add_argument('--nomemo', action="store_true", default=False,
+                    help="Disable importing of Memo field")
 parser.add_argument('--oldstyle', action="store_true", default=False,
                     help="Use the old style format with card-holder name in column 4e")
 parser.add_argument('--printcats', action="store_true", default=False,
@@ -139,6 +143,9 @@ with open(args.csvfilename, 'r') as csvfile:
       for p, cat in catmap.items():
          if payee.upper().startswith(p.upper()):
             category = cat
+         elif payee.startswith('GglPay '):
+            if payee.replace('GglPay ','').upper().startswith(p.upper()):
+               category = cat
 
       if category == '':
          unknown_payees.add(payee.upper())
@@ -154,7 +161,7 @@ with open(args.csvfilename, 'r') as csvfile:
       print("T%.2f" % amount)
       print("P%s" % payee)
       print("L%s" % category)
-      if memo:
+      if memo and not args.nomemo:
          print("M%s" % memo)
       print("^")
 
