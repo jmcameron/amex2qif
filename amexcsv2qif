@@ -59,7 +59,7 @@ overrides the version in the executable directory.
 parser.add_argument('csvfilename', type=str)
 parser.add_argument('--nomemo', action="store_true", default=False,
                     help="Disable importing of Memo field")
-parser.add_argument('--format', default='default', choices=['default', 'old', 'new'],
+parser.add_argument('--format', default='default', choices=['default', 'old', 'new', 'new2'],
                     help="Select the format. Do amexcsv2qif --help for detials.")
 parser.add_argument('--printcats', action="store_true", default=False,
                     help="Print the categories read from the 'categories.txt' file and exit.")
@@ -146,6 +146,24 @@ with open(args.csvfilename, 'r') as csvfile:
              else:
                  raise RuntimeError("Error in amount (%s) in column 5 on line %d of CSV file" % (row[4], i+1))
          memo = None
+      elif args.format == 'new2':
+         # Transaction Date,Post Date,Description,Category,Type,Amount
+         # COLS:  0:Date, 2:Description(payee), 3:Category(not useful), 4:type(not useful), 5:Amount
+         date = row[0]
+         ref = None
+         payee = row[2]
+         customer = None
+         try:
+             amount = float(row[5])
+         except:
+             if isinstance(row[5], str) and i==0:
+                 raise RuntimeError("The AMOUNT column (%s) in the last row of "
+                                    "the CSV file is not a number.  The first row "
+                                    "may contain column headers. Try running again "
+                                    "with the --header option" % row[5])
+             else:
+                 raise RuntimeError("Error in amount (%s) in last column on line %d of CSV file" % (row[5], i+1))
+         memo = None
       else:
          # DEFAULT
          try:
@@ -180,6 +198,13 @@ with open(args.csvfilename, 'r') as csvfile:
 
       if memo and ref:
          memo += " Ref: %s" % ref
+
+      if payee.startswith('AMZN Mktp US'):
+          payee = 'AMZN Mktp US'
+      if payee.startswith('Amazon.com'):
+          payee = 'Amazon.com'
+      if payee.startswith('CULINART GROUP'):
+          payee = 'CULINART GROUP'
 
       print("D%s" % date)
       print("T%.2f" % amount)
