@@ -6,4 +6,4 @@ __pycache__/
 # Individual category files, not for repo
 categories.py
 categories.txt
-test*.csv
+*.csv
