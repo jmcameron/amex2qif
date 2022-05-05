@@ -15,21 +15,21 @@ class FormatVersion:
         return self
 
     def next (self):
+        try:
+            row = self.allRows[self.rowptr]     # pylint: unused-variable
+        except IndexError:
+            raise StopIteration
+
+        self.rowptr += 1
+
+        # insert version specific implementation here
+
         date = None
         ref = None
         payee = None
         customer = None
         amount = None
         memo = None
-
-        try:
-            row = self.allRows[self.rowptr]     # pylint: unused-variable
-            self.rowptr += 1
-
-            # insert version specific implementation here
-
-        except IndexError:
-            raise StopIteration
 
         result = (date, ref, payee, customer, amount, memo)
         return result
@@ -43,29 +43,22 @@ class FormatVersion0 (FormatVersion):
     """
 
     def next (self):
-        date = None
-        ref = None
-        payee = None
-        customer = None
-        amount = None
-        memo = None
-
         try:
             row = self.allRows[self.rowptr]
-            self.rowptr += 1
-
-            date = row[0].split()[0]
-            ref = None
-            payee = row[2]
-            customer = row[3].split()[0]
-            try:
-                amount = -float(row[7])
-            except:
-                raise RuntimeError("Error in amount (%s) in column 7 on line %d of CSV file" % (row[7], self.rowptr))
-            memo = row[5]
-
         except IndexError:
             raise StopIteration
+
+        self.rowptr += 1
+
+        date = row[0].split()[0]
+        ref = None
+        payee = row[2]
+        customer = row[3].split()[0]
+        try:
+            amount = -float(row[7])
+        except:
+            raise RuntimeError("Error in amount (%s) in column 7 on line %d of CSV file" % (row[7], self.rowptr))
+        memo = row[5]
 
         result = (date, ref, payee, customer, amount, memo)
         return result
@@ -79,29 +72,22 @@ class FormatVersion1 (FormatVersion):
     """
 
     def next (self):
-        date = None
-        ref = None
-        payee = None
-        customer = None
-        amount = None
-        memo = None
-
         try:
             row = self.allRows[self.rowptr]
-            self.rowptr += 1
-
-            date = row[0]
-            ref = None
-            payee = row[1]
-            customer = row[2]
-            try:
-                amount = -float(row[4])
-            except:
-                raise RuntimeError("Error in amount (%s) in column 5 on line %d of CSV file" % (row[4], self.rowptr))
-            memo = None
-
         except IndexError:
             raise StopIteration
+
+        self.rowptr += 1
+
+        date = row[0]
+        ref = None
+        payee = row[1]
+        customer = row[2]
+        try:
+            amount = -float(row[4])
+        except:
+            raise RuntimeError("Error in amount (%s) in column 5 on line %d of CSV file" % (row[4], self.rowptr))
+        memo = None
 
         result = (date, ref, payee, customer, amount, memo)
         return result
@@ -115,29 +101,22 @@ class FormatVersion2 (FormatVersion):
     """
 
     def next (self):
-        date = None
-        ref = None
-        payee = None
-        customer = None
-        amount = None
-        memo = None
-
         try:
             row = self.allRows[self.rowptr]
-            self.rowptr += 1
-
-            date = row[0]
-            ref = None
-            payee = row[2]
-            customer = None
-            try:
-                amount = float(row[5])
-            except:
-                raise RuntimeError("Error in amount (%s) in last column on line %d of CSV file" % (row[5], self.rowptr))
-            memo = None
-
         except IndexError:
             raise StopIteration
+
+        self.rowptr += 1
+
+        date = row[0]
+        ref = None
+        payee = row[2]
+        customer = None
+        try:
+            amount = float(row[5])
+        except:
+            raise RuntimeError("Error in amount (%s) in last column on line %d of CSV file" % (row[5], self.rowptr))
+        memo = None
 
         result = (date, ref, payee, customer, amount, memo)
         return result
@@ -149,26 +128,18 @@ class FormatVersion3 (FormatVersion):
     """
 
     def next (self):
-        date = None
-        ref = None
-        payee = None
-        customer = None
-        amount = None
-        memo = None
-
         try:
             row = self.allRows[self.rowptr]
-            self.rowptr += 1
-
-            date = row[0]
-            ref = row[1].split()[1]
-            amount = float(row[2])
-            payee = row[3]
-            memo = row[4]
-            customer = None
-
         except IndexError:
             raise StopIteration
+        self.rowptr += 1
+
+        date = row[0]
+        ref = row[1].split()[1]
+        amount = float(row[2])
+        payee = row[3]
+        memo = row[4]
+        customer = None
 
         result = (date, ref, payee, customer, amount, memo)
         return result
@@ -180,28 +151,21 @@ class FormatVersion4 (FormatVersion):
     """
 
     def next (self):
-        date = None
-        ref = None
-        payee = None
-        customer = None
-        amount = None
-        memo = None
-
         try:
             row = self.allRows[self.rowptr]
-            self.rowptr += 1
-
-            date = row[0]
-            amount = float(row[2])
-            try:
-                payee = row[3].split("\n")[1]
-            except IndexError:
-                payee = 'UNK_PAYEE'
-            ref = row[9]
-            memo = row[10]
-            customer = None
-            result = (date, ref, payee, customer, amount, memo)
-            return result
         except IndexError:
             raise StopIteration
 
+        self.rowptr += 1
+
+        date = row[0]
+        amount = float(row[2])
+        try:
+            payee = row[3].split("\n")[1]
+        except IndexError:
+            payee = 'UNK_PAYEE'
+        ref = row[9]
+        memo = row[10]
+        customer = None
+        result = (date, ref, payee, customer, amount, memo)
+        return result
