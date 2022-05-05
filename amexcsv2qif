@@ -137,6 +137,7 @@ with open(args.csvfilename, 'r') as csvfile:
       allRows.append(row)
 
 
+print("!Type:CCard")
 for (date, ref, payee, customer, amount, memo) in rowHandler(allRows):
 
    category = ''
