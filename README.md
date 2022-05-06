@@ -38,7 +38,7 @@ may use either the older legacy version name or its new number when
 providing a value to the --format argument.
 
 The supported CSV format versions are as follows:
-
+```
    old      (0)=>date, ref, payee, card-holder-name, card-number, memo, amount
    new      (1)=>date, payee, card-holder-name, card-holder-number-end, amount
    new2     (2)=>Date, Description, Category, type, Amount
@@ -46,11 +46,12 @@ The supported CSV format versions are as follows:
    (noname) (4)=>Date, Description, Amount, 'Extended Details',
                   'Appears On Your Statement As Address', City/State,
                   'Zip Code', Country, Reference, Category
+```
 
 The most recent format, #4, was added based on an AMEX csv download from May 2022
 
 
-Regarding some of the legacy formats:
+**Regarding some of the legacy formats:**
 
     In the old-style, the columns are:
 
