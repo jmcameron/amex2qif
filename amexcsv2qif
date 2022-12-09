@@ -172,7 +172,7 @@ with open(args.csvfilename, 'r') as csvfile:
          payee = row[1]
          customer = None
          try:
-             amount = float(row[4])
+             amount = -float(row[4])
          except:
              if isinstance(row[4], str) and i==0:
                  raise RuntimeError("The AMOUNT column (%s) in the last row of "
