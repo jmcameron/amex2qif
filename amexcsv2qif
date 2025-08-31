@@ -200,6 +200,12 @@ with open(args.csvfilename, 'r') as csvfile:
 
       category = ''
 
+      payee = payee.removeprefix('TST*')
+      payee = payee.removeprefix('SQ *')
+      payee = payee.removeprefix('IC*')
+      payee = payee.removeprefix('UEP*')
+      payee = payee.removeprefix(' ')
+
       for p, cat in catmap.items():
          if payee.upper().startswith(p.upper()):
             category = cat
