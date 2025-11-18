@@ -1,6 +1,8 @@
 amex2qif
 ========
 
+WARNING: This is obsolete.  Please see my [`csv2qif`](https://github.com/jmcameron/csv2qif) library.
+
 Convert American Express CSV export files to QIF format.
 
 Several years ago, American Express dropped support for the QIF format for
